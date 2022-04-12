@@ -1,0 +1,42 @@
+version: '3.5' # We use version 3.5 syntax
+services: # Here we define our service(s)
+  web:
+    image: nginx:latest
+    #build:
+    #  context: .
+    #  dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    volumes:
+      - ./hosts:/etc/nginx/conf.d
+      - ./www:/var/www
+    links:
+      - php
+  php:
+    #remove this
+    #dockerfile: extensions
+    #image: php:7-fpm
+    build:
+      context: .
+      dockerfile: Dockerfile
+    #change with build ...
+    #build: './images/php'
+    links:
+      - mysql
+    volumes:
+      - ./www:/var/www
+  mysql:
+    image: mysql:5.7
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    expose:
+      - 33062
+    ports:
+      - 33062:3306
+    environment:
+      # - MYSQL_DATABASE=yii2advanced
+      # - MYSQL_ROOT_PASSWORD=123
+      - MYSQL_ROOT_PASSWORD=secret
+      - MYSQL_DATABASE=NewDataBase
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=secret
